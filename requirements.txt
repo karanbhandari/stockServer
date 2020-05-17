@@ -1,4 +1,7 @@
+aiohttp==3.6.2
 astroid==2.4.1
+async-timeout==3.0.1
+attrs==19.3.0
 certifi==2020.4.5.1
 chardet==3.0.4
 click==7.1.2
@@ -11,12 +14,17 @@ Jinja2==2.11.2
 lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
+multidict==4.7.6
 numpy==1.18.4
+opencv-contrib-python==4.2.0.34
 opencv-python==4.2.0.34
 pylint==2.5.2
 requests==2.23.0
 six==1.14.0
 toml==0.10.0
+uncurl==0.0.10
 urllib3==1.25.9
 Werkzeug==1.0.1
 wrapt==1.12.1
+xerox==0.4.1
+yarl==1.4.2
