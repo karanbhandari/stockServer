@@ -11,31 +11,50 @@ import async_timeout
 loop = asyncio.get_event_loop()
 app = Flask(__name__)
 
+global letLogin
 letLogin = False
+
+################################################# AVAILABLE ENDPOINTSS
 
 @app.route('/')
 def hello():
     return 'Hello World!'
 
+@app.route('/status')
+def status():
+    return str(letLogin)
+
 @app.route('/login')
 def login():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    username = request.args.get('user')
+    password = request.args.get('pwd')
 
-    if username == 'karan' & password == 'kaka':
+    if username == 'karan' and password == 'kaka':
         letLogin = True
-    return 'OK'
+        return 'YOU ARE NOW LOGGED IN' + str(letLogin)
+    
+    return 'SORRY CANT LOG YOU IN'
 
 @app.route('/logout')
 def logout():
     letLogin = False
-    return 'OK'
+    return 'OK' + str(letLogin)
 
-@app.route('/ticker')
-def use_external_ticker_api():
-    ticker_name = request.args.get('ticker')
+@app.route('/ticker/<ticker>')
+def use_external_ticker_api(ticker):
+    # need to figure out the authentication
+    # if not letLogin:
+    #     return "SORRY NOT SORRY"
+    ticker_name = ticker
     result = loop.run_until_complete(call_company_profile(ticker_name))
     return json.dumps(json.loads(result))
+
+@app.route('/company-key-metrics/<stock>')
+def company_key_metrics(stock):
+    return str(stock)
+
+
+#################################################
 
 async def call_company_profile(ticker):
     async with aiohttp.ClientSession() as session, async_timeout.timeout(10):
