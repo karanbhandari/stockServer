@@ -57,6 +57,13 @@ def company_key_metrics(ticker):
     result = loop.run_until_complete(call_my_api(url))
     return json.dumps(json.loads(result))
 
+@app.route('/company-rating/<ticker>')
+def company_rating(ticker):
+    url = 'https://financialmodelingprep.com/api/v3/company/rating/' + ticker
+    result = loop.run_until_complete(call_my_api(url))
+    return json.dumps(json.loads(result))
+
+
 #################################################
 
 async def call_my_api(url):
