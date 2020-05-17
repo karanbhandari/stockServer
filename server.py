@@ -45,8 +45,10 @@ def use_external_ticker_api(ticker):
     # need to figure out the authentication
     # if not letLogin:
     #     return "SORRY NOT SORRY"
-    ticker_name = ticker
-    result = loop.run_until_complete(call_company_profile(ticker_name))
+    if not ticker:
+        return 'Wrong use of the API'
+    url = 'https://financialmodelingprep.com/api/v3/company/profile/' + ticker
+    result = loop.run_until_complete(call_my_api(url))
     return json.dumps(json.loads(result))
 
 @app.route('/company-key-metrics/<stock>')
@@ -56,9 +58,9 @@ def company_key_metrics(stock):
 
 #################################################
 
-async def call_company_profile(ticker):
+async def call_my_api(url):
     async with aiohttp.ClientSession() as session, async_timeout.timeout(10):
-        async with session.get('https://financialmodelingprep.com/api/v3/company/profile/' + ticker) as resp:
+        async with session.get(url) as resp:
             return await resp.text()
 
 if __name__=='__main__':
