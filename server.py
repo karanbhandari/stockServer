@@ -67,48 +67,115 @@ def company_rating(ticker):
     result = loop.run_until_complete(call_my_api(url))
     return json.dumps(json.loads(result))
 
-@app.route('/test')
-def test():
-    res = stock_price_per_quarter('AAPL', 2)
+@app.route('/important_values/<ticker>/<years>')
+def important_values(ticker, years):
+    res = stock_price_per_quarter(ticker, int(years))
+    # res['yield_values'] = get_ticker_yield_values_per_quarter('AAPL', 2) 
     return json.dumps(res)
 
 ################################################
 # Models
 # ideally should be added to the models class
 
+# Required data: 
+    # Comapnykey metrics:
+        # pe ratio, Earnings yield, (TBD: also highest pe ratio in last 5 years) dividend yield, tbvps, book value per share (get total book value), cash value per share, current ratio,  payout ratio
+    # Company financial statement
+        # eps
+    #  balance sheet statement
+        # Total debt
+    #  company financial growth (TODO)
+        # 10 y net income growth, 5 y income growth
 class Quaterly_Data:
-    def __init__(self, **entries):
-        self.date = entries['date']
-        self.stock_price = float(entries['Stock Price'])
-        self.number_of_shares = float(entries['Number of Shares'])
-        self.market_capitalization = str(entries['Market Capitalization'])
-        self.cash_equivalent = str(entries['- Cash & Cash Equivalents'])
-        self.total_debt = str(entries['+ Total Debt'])
-        self.enterprise_value = str(entries['Enterprise Value'])
+    def __init__(self, entries):
+        self.date = entries[0]['date']
+        self.stock_price = float(entries[0]['Stock Price'])
+        self.number_of_shares = float(entries[0]['Number of Shares'])
+        # self.market_capitalization = str(entries['Market Capitalization'])
+        # self.cash_equivalent = str(entries['- Cash & Cash Equivalents'])
+
+        self.total_debt = str(entries[0]['+ Total Debt'])
+        self.pe_ratio = entries[1]['PE ratio']
+        self.earnings_yield = entries[1]['Earnings Yield']
+        self.dividend_yield = entries[1]['Dividend Yield']
+        self.tangible_book_value_per_share = entries[1]['Tangible Book Value per Share']
+        self.book_value_per_share = entries[1]['Book Value per Share']
+        self.book_value = float(self.book_value_per_share) * self.number_of_shares
+        self.cash_value_per_share = entries[1]['Cash per Share']
+        self.current_ratio = entries[1]['Current ratio']
+        self.payout_ratio = entries[1]['Payout Ratio']
+        self.graham_number = entries[1]['Graham Number']
+        self.pb_ratio = entries[1]['PB ratio']
+        self.revenue_per_share = entries[1]['Revenue per Share']
+        self.net_income_per_share = entries[1]['Net Income per Share']
 
 
+        self.revenue = entries[2]['Revenue']
+        self.revenue_growth = entries[2]['Revenue Growth']
+        self.gross_profit = entries[2]['Gross Profit']
+        self.net_income = entries[2]['Net Income']
+        self.dividend_per_share = entries[2]['Dividend per Share']
+
+        self.total_debt = float(entries[3]['Total debt'])
+        self.total_assets = float(entries[3]['Total assets'])
+
+        # self.enterprise_value = str(entries['Enterprise Value'])
 
 #################################################
 # helper functions
 
-# returns the stock price result at the end of the every quarter along with the number of shares, Market Capitalization, cash and equivalents, total debt and enterprise value
+# Gets the Earnings Yield, Free cash flow yield and dividend yield for the past two quarters
 
+# returns the stock price result at the end of the every quarter along with the number of shares, Market Capitalization, cash and equivalents, total debt and enterprise value
 def stock_price_per_quarter(ticker, total_past_years_req):
-    url = 'https://financialmodelingprep.com/api/v3/enterprise-value/' + ticker + '?period=quarter'
-    result = json.loads(loop.run_until_complete(call_my_api(url)))
+    enterprise_value_url = 'https://financialmodelingprep.com/api/v3/enterprise-value/' + ticker + '?period=quarter'
+    company_key_metrics_url = 'https://financialmodelingprep.com/api/v3/company-key-metrics/' + ticker + '?period=quarter'
+    company_financial_statements_url = 'https://financialmodelingprep.com/api/v3/financials/income-statement/' + ticker + '?period=quarter'
+    balance_sheet_statements_url = 'https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/' + ticker + '?period=quarter'
+    company_financial_growth_url = 'https://financialmodelingprep.com/api/v3/financial-statement-growth/' + ticker + '?period=quarter'
+    enterprise_value_result, \
+    company_key_metrics_result, \
+    company_financial_statements_result, \
+    balance_sheet_statements_result, \
+    company_financial_growth_result = loop.run_until_complete(multiple_tasks([enterprise_value_url, 
+                                                                                                company_key_metrics_url, 
+                                                                                                company_financial_statements_url, 
+                                                                                                balance_sheet_statements_url, 
+                                                                                                company_financial_growth_url]))
+                                    #         call_my_api(enterprise_value_url), 
+                                    #         call_my_api(company_key_metrics_url), 
+                                    #         call_my_api(company_financial_statements_url), 
+                                    #         call_my_api(balance_sheet_statements_url), 
+                                    #         call_my_api(company_financial_growth_url)
+                                    #  )
+    enterprise_value_result = json.loads(enterprise_value_result)
+    company_key_metrics_result = json.loads(company_key_metrics_result)
+    company_financial_statements_result = json.loads(company_financial_statements_result)
+    balance_sheet_statements_result = json.loads(balance_sheet_statements_result)
+    company_financial_growth_result = json.loads(company_financial_growth_result)
+
+
     current_year = date.today().year
     start_year = current_year - total_past_years_req 
     response = []
-    for item in result["enterpriseValues"]:
-        data = Quaterly_Data(**item)
+    x = 0
+    for item in zip(enterprise_value_result["enterpriseValues"], company_key_metrics_result['metrics'], company_financial_statements_result['financials'], balance_sheet_statements_result['financials'], company_financial_growth_result['growth']):
+        # print(item)
+        if x is 0:
+            print(str(type(item)), item)
+            x+=1
+        data = Quaterly_Data(item)
         dt = datetime.strptime(data.date, '%Y-%m-%d')
         if dt.year >= start_year:
             response.append(data.__dict__)
-    return {'symbol': result['symbol'], ' data': response}
+    return {'symbol': enterprise_value_result['symbol'], ' data': response}
     # print(response)
-    # return result
+    # return 'OK'
 
-
+async def multiple_tasks(urllist):
+  input_coroutines = [call_my_api(x) for x in urllist]
+  res = await asyncio.gather(*input_coroutines, return_exceptions=True)
+  return res
 
 # calls the stocks api asyncronously
 async def call_my_api(url):
