@@ -139,10 +139,10 @@ async def stock_price_per_quarter(ticker, total_past_years_req):
     company_financial_statements_result, \
     balance_sheet_statements_result, \
     company_financial_growth_result = await multiple_tasks([enterprise_value_url, 
-                                                                                                company_key_metrics_url, 
-                                                                                                company_financial_statements_url, 
-                                                                                                balance_sheet_statements_url, 
-                                                                                                company_financial_growth_url])
+                                                            company_key_metrics_url, 
+                                                            company_financial_statements_url, 
+                                                            balance_sheet_statements_url, 
+                                                            company_financial_growth_url])
                                     #         call_my_api(enterprise_value_url), 
                                     #         call_my_api(company_key_metrics_url), 
                                     #         call_my_api(company_financial_statements_url), 
@@ -155,7 +155,8 @@ async def stock_price_per_quarter(ticker, total_past_years_req):
     balance_sheet_statements_result = json.loads(balance_sheet_statements_result)
     company_financial_growth_result = json.loads(company_financial_growth_result)
 
-
+    if enterprise_value_result is None:
+        print('>>>>>>>>>>>Did not GEt the RespoNSe Yet!!')
     current_year = date.today().year
     start_year = current_year - total_past_years_req 
     response = []
