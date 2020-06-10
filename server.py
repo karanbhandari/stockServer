@@ -158,8 +158,35 @@ async def stock_price_per_quarter(ticker, total_past_years_req):
     try:
         val = enterprise_value_result["enterpriseValues"]
         print('OK REPORT')
-    except expression as identifier:
-        print('An exception occured : ' + str(identifier))
+    except:
+        print('An exception occured IN enterprise_value_result: ')
+    
+    try:
+        val = company_key_metrics_result['metrics']
+        print('OK REPORT')
+    except:
+        print('An exception occured IN company_key_metrics_result: ')
+    
+    try:
+        val = company_financial_statements_result['financials']
+        print('OK REPORT')
+    except:
+        print('An exception occured IN company_financial_statements_result : ')
+    
+    try:
+        val = balance_sheet_statements_result['financials']
+        print('OK REPORT')
+    except:
+        print('An exception occured  IN balance_sheet_statements_result: ')
+
+    try:
+        val = company_financial_growth_result['growth']
+        print('OK REPORT')
+    except:
+        print('An exception occured  IN company_financial_growth_result: ')
+        
+
+    
     current_year = date.today().year
     start_year = current_year - total_past_years_req 
     response = []
