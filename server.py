@@ -165,6 +165,8 @@ async def stock_price_per_quarter(ticker, total_past_years_req):
         val = company_key_metrics_result['metrics']
         print('OK REPORT')
     except:
+        print('>>>>>>>company metrics here')
+        print(company_key_metrics_result['metrics'])
         print('An exception occured IN company_key_metrics_result: ')
     
     try:
