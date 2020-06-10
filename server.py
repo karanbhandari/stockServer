@@ -128,11 +128,11 @@ class Quaterly_Data:
 
 # returns the stock price result at the end of the every quarter along with the number of shares, Market Capitalization, cash and equivalents, total debt and enterprise value
 def stock_price_per_quarter(ticker, total_past_years_req):
-    enterprise_value_url = 'https://financialmodelingprep.com/api/v3/enterprise-value/' + ticker + '?period=quarter'
-    company_key_metrics_url = 'https://financialmodelingprep.com/api/v3/company-key-metrics/' + ticker + '?period=quarter'
-    company_financial_statements_url = 'https://financialmodelingprep.com/api/v3/financials/income-statement/' + ticker + '?period=quarter'
-    balance_sheet_statements_url = 'https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/' + ticker + '?period=quarter'
-    company_financial_growth_url = 'https://financialmodelingprep.com/api/v3/financial-statement-growth/' + ticker + '?period=quarter'
+    enterprise_value_url = 'https://financialmodelingprep.com/api/v3/enterprise-value/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
+    company_key_metrics_url = 'https://financialmodelingprep.com/api/v3/company-key-metrics/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
+    company_financial_statements_url = 'https://financialmodelingprep.com/api/v3/financials/income-statement/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
+    balance_sheet_statements_url = 'https://financialmodelingprep.com/api/v3/financials/balance-sheet-statement/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
+    company_financial_growth_url = 'https://financialmodelingprep.com/api/v3/financial-statement-growth/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
     enterprise_value_result, \
     company_key_metrics_result, \
     company_financial_statements_result, \
@@ -159,6 +159,7 @@ def stock_price_per_quarter(ticker, total_past_years_req):
     start_year = current_year - total_past_years_req 
     response = []
     x = 0
+    # print(enterprise_value_result)
     for item in zip(enterprise_value_result["enterpriseValues"], company_key_metrics_result['metrics'], company_financial_statements_result['financials'], balance_sheet_statements_result['financials'], company_financial_growth_result['growth']):
         # print(item)
         if x is 0:
