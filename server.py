@@ -8,6 +8,7 @@ import json
 import async_timeout
 from datetime import date, datetime
 from collections import namedtuple
+import time
 
 # from model import Quaterly_Data
 
@@ -160,9 +161,10 @@ def stock_price_per_quarter(ticker, total_past_years_req):
     response = []
     x = 0
     # print(enterprise_value_result)
+    time.sleep(0.5)
     for item in zip(enterprise_value_result["enterpriseValues"], company_key_metrics_result['metrics'], company_financial_statements_result['financials'], balance_sheet_statements_result['financials'], company_financial_growth_result['growth']):
         # print(item)
-        if x is 0:
+        if x == 0:
             print(str(type(item)), item)
             x+=1
         data = Quaterly_Data(item)
