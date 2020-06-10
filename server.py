@@ -70,7 +70,7 @@ def company_rating(ticker):
 
 @app.route('/important_values/<ticker>/<years>')
 def important_values(ticker, years):
-    res = stock_price_per_quarter(ticker, int(years))
+    res = loop.run_until_complete(stock_price_per_quarter(ticker, int(years)))
     # res['yield_values'] = get_ticker_yield_values_per_quarter('AAPL', 2) 
     return json.dumps(res)
 
@@ -128,7 +128,7 @@ class Quaterly_Data:
 # Gets the Earnings Yield, Free cash flow yield and dividend yield for the past two quarters
 
 # returns the stock price result at the end of the every quarter along with the number of shares, Market Capitalization, cash and equivalents, total debt and enterprise value
-def stock_price_per_quarter(ticker, total_past_years_req):
+async def stock_price_per_quarter(ticker, total_past_years_req):
     enterprise_value_url = 'https://financialmodelingprep.com/api/v3/enterprise-value/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
     company_key_metrics_url = 'https://financialmodelingprep.com/api/v3/company-key-metrics/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
     company_financial_statements_url = 'https://financialmodelingprep.com/api/v3/financials/income-statement/' + ticker + '?period=quarter&apikey=bc6493757e637dacae367b78338df22b'
@@ -138,11 +138,11 @@ def stock_price_per_quarter(ticker, total_past_years_req):
     company_key_metrics_result, \
     company_financial_statements_result, \
     balance_sheet_statements_result, \
-    company_financial_growth_result = loop.run_until_complete(multiple_tasks([enterprise_value_url, 
+    company_financial_growth_result = await multiple_tasks([enterprise_value_url, 
                                                                                                 company_key_metrics_url, 
                                                                                                 company_financial_statements_url, 
                                                                                                 balance_sheet_statements_url, 
-                                                                                                company_financial_growth_url]))
+                                                                                                company_financial_growth_url])
                                     #         call_my_api(enterprise_value_url), 
                                     #         call_my_api(company_key_metrics_url), 
                                     #         call_my_api(company_financial_statements_url), 
