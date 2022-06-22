@@ -15,7 +15,7 @@ lazy-object-proxy==1.4.3
 MarkupSafe==1.1.1
 mccabe==0.6.1
 multidict==4.7.6
-numpy==1.18.4
+numpy==1.22.0
 opencv-contrib-python==4.2.0.34
 opencv-python==4.2.0.34
 pylint==2.5.2
